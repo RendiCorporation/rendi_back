@@ -17,7 +17,7 @@ public class ProductSaveRequest {
     private String detailUrl;
     private Long hits;
     private String categoryName;
-    private String colourName;
+    private List<String> colourNames;
     private String keywordList;
     private List<String> productImgUrl;
 

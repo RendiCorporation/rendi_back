@@ -60,11 +60,6 @@ public class InitColour {
             em.persist(colour16);
 
 
-
-
-
-
-
         }
 
         private Colour createColour(String colourName) {

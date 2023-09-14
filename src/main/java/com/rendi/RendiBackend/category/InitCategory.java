@@ -30,13 +30,13 @@ public class InitCategory {
         public void init() {
             Category category1 = createCategory(null, "상의", 1);
             Category category2 = createCategory(null, "아우터", 2);
-            Category category3 = createCategory(null, "원피스", 3);
+            Category category3 = createCategory(null, "원피스/세트", 3);
             Category category4 = createCategory(null, "바지", 4);
             Category category5 = createCategory(null, "스커트", 5);
             Category category6 = createCategory(null, "트레이닝", 6);
             Category category7 = createCategory(null, "이너웨어", 7);
             Category category8 = createCategory(null, "수영복", 8);
-            Category category9 = createCategory(null, "슈즈", 9);
+            Category category9 = createCategory(null, "패션잡화", 9);
             Category category10 = createCategory(null, "가방", 10);
             Category category11 = createCategory(null, "기타", 11);
 

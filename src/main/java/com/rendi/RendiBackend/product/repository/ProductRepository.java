@@ -14,8 +14,9 @@ public interface ProductRepository extends JpaRepository<Product, Long>,  JpaSpe
     Optional<Product> findByTitle(String title);
     List<Product> findByBrandId(Long brandId);
     List<Product> findByCategory(Category category);
-    List<Product> findByColour(Colour colour);
+//    List<Product> findByColour(Colour colour);
     List<Product> findByCategoryOrderByCreatedAtDesc(Category category);
     List<Product> findByCategoryOrderByHitsDesc(Category category);
+    List<Product> findByColoursContains(Colour colour);
 
 }
