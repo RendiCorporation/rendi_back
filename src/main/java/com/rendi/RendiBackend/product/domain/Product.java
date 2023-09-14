@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -35,9 +36,17 @@ public class Product extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "colour_id")
-    private Colour colour;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "colour_id")
+//    private Colour colour;
+
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "Product_Colour",
+            joinColumns = { @JoinColumn(name = "product_id") },
+            inverseJoinColumns = { @JoinColumn(name = "colour_id") }
+    )
+    Set<Colour> colours;
 
     @ElementCollection
     @CollectionTable(name = "product_imgs", joinColumns = @JoinColumn(name = "product_id"))

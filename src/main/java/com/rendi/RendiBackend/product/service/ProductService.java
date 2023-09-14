@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Slf4j
@@ -51,13 +48,17 @@ public class ProductService {
             if(productRepository.findByTitle(request.getTitle()).isPresent()){
                 throw new ProductException(ProductErrorCode.PRODUCT_TITLE_DUPLICATED);
             }
-            Colour colour = colourRepository.findByColourName(request.getColourName())
-                    .orElseThrow(()-> new ProductException(ProductErrorCode.COLOUR_NOT_FOUND_BY_COLOUR_NAME));
+            Set<Colour> colours = new HashSet<>();
+            for (String colourName : request.getColourNames()) {
+                Colour colour = colourRepository.findByColourName(colourName)
+                        .orElseThrow(()-> new ProductException(ProductErrorCode.COLOUR_NOT_FOUND_BY_COLOUR_NAME));
+                colours.add(colour);
+            }
             Category category = categoryRepository.findByCategoryName(request.getCategoryName())
                     .orElseThrow(()-> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
             Product product = request.toProduct();
             product.setBrand(brand);
-            product.setColour(colour);
+            product.setColours(colours);
             product.setCategory(category);
             productRepository.save(product);
         }
@@ -200,27 +201,27 @@ public class ProductService {
         }
         return dtos;
     }
-    public List<Product> sortedByFilter(String sortName, String parentCategory, String childCategory,
-                                        String colourName, String priceTag) {
-        if (parentCategory != null){
-            Category category = categoryRepository.findByCategoryName(parentCategory)
-                    .orElseThrow(()-> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
-            return productRepository.findByCategory(category);
-        }
-        if (childCategory != null){
-            Category category = categoryRepository.findByCategoryName(childCategory)
-                    .orElseThrow(()-> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
-            return productRepository.findByCategory(category);
-        }
-        if (colourName != null){
-            Colour colour = colourRepository.findByColourName(colourName)
-                    .orElseThrow(()->new ProductException(ProductErrorCode.COLOUR_NOT_FOUND_BY_COLOUR_NAME));
-            return productRepository.findByColour(colour);
-        }
-
-
-        return productRepository.findAll();
-    }
+//    public List<Product> sortedByFilter(String sortName, String parentCategory, String childCategory,
+//                                        String colourName, String priceTag) {
+//        if (parentCategory != null){
+//            Category category = categoryRepository.findByCategoryName(parentCategory)
+//                    .orElseThrow(()-> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
+//            return productRepository.findByCategory(category);
+//        }
+//        if (childCategory != null){
+//            Category category = categoryRepository.findByCategoryName(childCategory)
+//                    .orElseThrow(()-> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
+//            return productRepository.findByCategory(category);
+//        }
+//        if (colourName != null){
+//            Colour colour = colourRepository.findByColourName(colourName)
+//                    .orElseThrow(()->new ProductException(ProductErrorCode.COLOUR_NOT_FOUND_BY_COLOUR_NAME));
+//            return productRepository.findByColour(colour);
+//        }
+//
+//
+//        return productRepository.findAll();
+//    }
     //    public void ciderUrlstoJpg(List<ProductImgSaveRequest> requestList){
 //        for(ProductImgSaveRequest request : requestList){
 //            String originUrl = request.getOriginUrl();
