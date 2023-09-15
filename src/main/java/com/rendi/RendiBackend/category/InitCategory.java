@@ -122,7 +122,7 @@ public class InitCategory {
             createCategory(category9, "워커/부츠", 7);
             createCategory(category9, "슬리퍼/쪼리", 8);
             createCategory(category9, "주얼리", 9);
-            createCategory(category9, "기타", 10);
+//            createCategory(category9, "기타", 10);
 
             createCategory(category10, "전체", 1);
             createCategory(category10, "백팩", 2);
@@ -145,7 +145,7 @@ public class InitCategory {
             createCategory(category11, "양말/스타킹", 8);
             createCategory(category11, "시계", 9);
             createCategory(category11, "마스크", 10);
-            createCategory(category11, "기타", 11);
+//            createCategory(category11, "기타", 11);
 
 
 

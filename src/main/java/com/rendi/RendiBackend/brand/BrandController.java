@@ -1,6 +1,7 @@
 package com.rendi.RendiBackend.brand;
 
 import com.rendi.RendiBackend.brand.domain.Brand;
+import com.rendi.RendiBackend.brand.dto.BrandDetailGuestResponse;
 import com.rendi.RendiBackend.brand.dto.BrandDetailResponse;
 import com.rendi.RendiBackend.brand.dto.BrandListResponse;
 import com.rendi.RendiBackend.brand.dto.BrandSaveRequest;
@@ -40,5 +41,9 @@ public class BrandController {
     @GetMapping("/details")
     public BrandDetailResponse findByBrandName(@RequestParam String brandName) {
         return brandService.getBrandDetails(brandName);
+    }
+    @GetMapping("/guest/details")
+    public BrandDetailGuestResponse findByBrandNameGuest(@RequestParam String brandName) {
+        return brandService.getBrandDetailsGuest(brandName);
     }
 }

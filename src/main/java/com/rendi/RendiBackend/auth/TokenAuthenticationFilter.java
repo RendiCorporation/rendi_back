@@ -44,6 +44,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     "/brand/add/hj",
                     "/brand/add/hj/one",
                     "/brand/all",
+                    "/brand/guest/details",
                     "/products/hits/update",
                     "/products",
                     "/products/guest/new",

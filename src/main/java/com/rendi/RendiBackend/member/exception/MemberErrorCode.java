@@ -17,6 +17,7 @@ public enum MemberErrorCode {
     MEMBER_PROFILE_BAD_REQUEST("img가 null일 수 없습니다."),
 
     ACCOUNT_IN_SOCIAL("일반 회원가입으로 가입한 계정이 아닙니다."),
+    INTEREST_NOT_FOUND("INTEREST를 profile id로 찾을수 없습니다"),
     MEMBER_PW_UPDATE_FAILED("비밀번호 재설정에 실패하였습니다.");
 
 

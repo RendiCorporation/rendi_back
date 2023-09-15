@@ -54,8 +54,11 @@ public class ProfileService {
         Member member = findCurrentMember();
         Profile profile = profileRepository.findById(member.getId())
                 .orElseThrow(()-> new MemberException(MemberErrorCode.PROFILE_NOT_FOUND));
+        List<String> interests = profile.getInterests().stream()
+                .map(Interest::getField)
+                .collect(Collectors.toList());
         return new InfoResponse(profile.getEmail(), profile.getNickname(), member.getUsername(),
-                member.getPassword(), profile.getBirth(), profile.getPhonenum());
+                profile.getBirth(), profile.getPhonenum(), interests);
 
     }
     @Transactional

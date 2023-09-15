@@ -1,6 +1,7 @@
 package com.rendi.RendiBackend.brand.service;
 
 import com.rendi.RendiBackend.brand.domain.Brand;
+import com.rendi.RendiBackend.brand.dto.BrandDetailGuestResponse;
 import com.rendi.RendiBackend.brand.dto.BrandDetailResponse;
 import com.rendi.RendiBackend.brand.dto.BrandListResponse;
 import com.rendi.RendiBackend.brand.dto.BrandSaveRequest;
@@ -75,5 +76,21 @@ public class BrandService {
             totalWishes += product.getHits();
         }
         return new BrandDetailResponse(brand, totalWishes, dtos);
+    }
+    @Transactional
+    public BrandDetailGuestResponse getBrandDetailsGuest(String brandName){
+        List<ProductGuestResponse> dtos = new ArrayList<>();
+        Brand brand = brandRepository.findByBrandName(brandName)
+                .orElseThrow(()->new BrandException(BrandErrorCode.BRAND_NOT_FOUND_BY_NAME));
+        List<Product> products = productRepository.findByBrandId(brand.getId());
+        Member member = memberService.findCurrentMember();
+        Long totalWishes = 0L;
+        for (Product product : products){
+            boolean wishYN = wishService.checkWishes(member, product);
+            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
+                    ,product.getProductImgUrl(), product.getDetailUrl()));
+            totalWishes += product.getHits();
+        }
+        return new BrandDetailGuestResponse(brand, totalWishes, dtos);
     }
 }
