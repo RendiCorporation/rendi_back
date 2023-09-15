@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class WishListResponse {
 
     private Long ProductId;
-    private String price;
+    private Long price;
     private Long brandId;
     private String title;
 }

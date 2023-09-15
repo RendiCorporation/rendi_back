@@ -13,7 +13,7 @@ import java.util.List;
 public class ProductSaveRequest {
     private Long brandId;
     private String title; //product name
-    private String price;
+    private Long price;
     private String detailUrl;
     private Long hits;
     private String categoryName;

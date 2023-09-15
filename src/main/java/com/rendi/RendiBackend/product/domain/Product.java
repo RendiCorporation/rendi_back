@@ -24,7 +24,8 @@ public class Product extends BaseTimeEntity {
     private Long id;
 
     private String title;
-    private String price;
+    private Long price;
+    @Column(length = 1000)
     private String detailUrl;
     private Long hits;
     private String keywords;

@@ -41,6 +41,11 @@ public class InitColour {
             Colour colour14 = createColour("카키");
             Colour colour15 = createColour("실버");
             Colour colour16 = createColour("골드");
+            Colour colour17 = createColour("차콜");
+            Colour colour18 = createColour("크림");
+            Colour colour19 = createColour("스카이블루");
+            Colour colour20 = createColour("민트");
+            Colour colour21 = createColour("기타");
 
             em.persist(colour1);
             em.persist(colour2);
@@ -58,6 +63,11 @@ public class InitColour {
             em.persist(colour14);
             em.persist(colour15);
             em.persist(colour16);
+            em.persist(colour17);
+            em.persist(colour18);
+            em.persist(colour19);
+            em.persist(colour20);
+            em.persist(colour21);
 
 
         }

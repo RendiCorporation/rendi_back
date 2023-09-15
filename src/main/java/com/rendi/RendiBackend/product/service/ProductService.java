@@ -45,11 +45,13 @@ public class ProductService {
         for (ProductSaveRequest request : requestList) {
             Brand brand = brandRepository.findById(request.getBrandId())
                     .orElseThrow(()-> new BrandException(BrandErrorCode.BRAND_NOT_FOUND_BY_ID));
+            log.info("product title duplicated : {}", request.getTitle());
             if(productRepository.findByTitle(request.getTitle()).isPresent()){
                 throw new ProductException(ProductErrorCode.PRODUCT_TITLE_DUPLICATED);
             }
             Set<Colour> colours = new HashSet<>();
             for (String colourName : request.getColourNames()) {
+                log.info("product title : {}", request.getTitle());
                 Colour colour = colourRepository.findByColourName(colourName)
                         .orElseThrow(()-> new ProductException(ProductErrorCode.COLOUR_NOT_FOUND_BY_COLOUR_NAME));
                 colours.add(colour);

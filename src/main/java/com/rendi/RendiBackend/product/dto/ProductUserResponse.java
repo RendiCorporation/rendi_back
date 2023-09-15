@@ -13,7 +13,7 @@ import java.util.List;
 public class ProductUserResponse {
     private Long productId;
 
-    private String price;
+    private Long price;
 
     private Long brandId;
 
