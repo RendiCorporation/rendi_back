@@ -28,6 +28,7 @@ public class Product extends BaseTimeEntity {
     @Column(length = 1000)
     private String detailUrl;
     private Long hits;
+    @Column(length = 10000)
     private String keywords;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")

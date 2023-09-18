@@ -50,7 +50,9 @@ public class WishService {
         List<WishListResponse> dtos = new ArrayList<>();
         List<Wish> wishes = wishRepository.findAllByMember(member);
         for(Wish wish : wishes){
-            dtos.add(new WishListResponse(wish.getProduct().getId(), wish.getProduct().getPrice(), wish.getProduct().getBrand().getId(), wish.getProduct().getTitle()));
+            dtos.add(new WishListResponse(wish.getProduct().getId(), wish.getProduct().getPrice(),
+                    wish.getProduct().getBrand().getId(), wish.getProduct().getTitle(),
+                    wish.getProduct().getProductImgUrl(), wish.getProduct().getDetailUrl()));
         }
         return dtos;
     }

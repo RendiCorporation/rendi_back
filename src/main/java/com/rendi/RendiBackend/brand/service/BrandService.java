@@ -9,6 +9,7 @@ import com.rendi.RendiBackend.brand.exception.BrandErrorCode;
 import com.rendi.RendiBackend.brand.exception.BrandException;
 import com.rendi.RendiBackend.brand.repository.BrandRepository;
 import com.rendi.RendiBackend.category.Category;
+import com.rendi.RendiBackend.category.CategoryRepository;
 import com.rendi.RendiBackend.colour.Colour;
 import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.member.service.MemberService;
@@ -37,6 +38,7 @@ public class BrandService {
     private final WishService wishService;
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     @Transactional
     public Brand createBrand(BrandSaveRequest request) {
         return brandRepository.save(new Brand(request.getBrandName(), request.getIconUrl(), request.getBannerUrl()));
@@ -61,32 +63,47 @@ public class BrandService {
         return dtos;
     }
     @Transactional
-    public BrandDetailResponse getBrandDetails(String brandName){
+    public BrandDetailResponse getBrandDetails(String brandName, String categoryName){
         List<ProductUserResponse> dtos = new ArrayList<>();
         Brand brand = brandRepository.findByBrandName(brandName)
                 .orElseThrow(()->new BrandException(BrandErrorCode.BRAND_NOT_FOUND_BY_NAME));
-        List<Product> products = productRepository.findByBrandId(brand.getId());
+        List<Product> products;
+        if (categoryName == null || categoryName.isEmpty()) {
+            products = productRepository.findByBrandId(brand.getId());
+        } else {
+            Category parentCategory = categoryRepository.findByCategoryName(categoryName)
+                    .orElseThrow(() -> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
+            List<Category> subCategories = parentCategory.getAllSubcategories();
+            subCategories.add(parentCategory);
+            products = productRepository.findByBrandIdAndCategoryIn(brand.getId(), subCategories);
+        }
         Member member = memberService.findCurrentMember();
         Long totalWishes = 0L;
         for (Product product : products){
             boolean wishYN = wishService.checkWishes(member, product);
             dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
                     ,wishYN, product.getProductImgUrl(), product.getDetailUrl()));
-            //TODO : wish or hits?
             totalWishes += product.getHits();
         }
         return new BrandDetailResponse(brand, totalWishes, dtos);
     }
     @Transactional
-    public BrandDetailGuestResponse getBrandDetailsGuest(String brandName){
+    public BrandDetailGuestResponse getBrandDetailsGuest(String brandName, String categoryName){
         List<ProductGuestResponse> dtos = new ArrayList<>();
         Brand brand = brandRepository.findByBrandName(brandName)
                 .orElseThrow(()->new BrandException(BrandErrorCode.BRAND_NOT_FOUND_BY_NAME));
-        List<Product> products = productRepository.findByBrandId(brand.getId());
-        Member member = memberService.findCurrentMember();
+        List<Product> products;
+        if (categoryName == null || categoryName.isEmpty()) {
+            products = productRepository.findByBrandId(brand.getId());
+        } else {
+            Category parentCategory = categoryRepository.findByCategoryName(categoryName)
+                    .orElseThrow(() -> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
+            List<Category> subCategories = parentCategory.getAllSubcategories();
+            subCategories.add(parentCategory);
+            products = productRepository.findByBrandIdAndCategoryIn(brand.getId(), subCategories);
+        }
         Long totalWishes = 0L;
         for (Product product : products){
-            boolean wishYN = wishService.checkWishes(member, product);
             dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
                     ,product.getProductImgUrl(), product.getDetailUrl()));
             totalWishes += product.getHits();

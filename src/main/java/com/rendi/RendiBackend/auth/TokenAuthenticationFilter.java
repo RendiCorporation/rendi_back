@@ -49,7 +49,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     "/products",
                     "/products/guest/new",
                     "/products/guest/best",
-                    "/products/guest/all"
+                    "/products/guest/all",
+                    "/products/guest/category",
+                    "/products/guest/search/keyword",
+                    "/products/filter",
+                    "/search/guest/filter"
             );
 
     @Override

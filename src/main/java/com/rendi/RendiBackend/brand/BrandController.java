@@ -39,11 +39,11 @@ public class BrandController {
 
     }
     @GetMapping("/details")
-    public BrandDetailResponse findByBrandName(@RequestParam String brandName) {
-        return brandService.getBrandDetails(brandName);
+    public BrandDetailResponse findByBrandName(@RequestParam String brandName, @RequestParam(required = false) String categoryName) {
+        return brandService.getBrandDetails(brandName, categoryName);
     }
     @GetMapping("/guest/details")
-    public BrandDetailGuestResponse findByBrandNameGuest(@RequestParam String brandName) {
-        return brandService.getBrandDetailsGuest(brandName);
+    public BrandDetailGuestResponse findByBrandNameGuest(@RequestParam String brandName, @RequestParam(required = false) String categoryName) {
+        return brandService.getBrandDetailsGuest(brandName, categoryName);
     }
 }

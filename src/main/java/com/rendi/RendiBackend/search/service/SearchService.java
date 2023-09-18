@@ -1,50 +1,21 @@
 package com.rendi.RendiBackend.search.service;
 
-import com.rendi.RendiBackend.member.domain.Member;
-import com.rendi.RendiBackend.member.service.MemberService;
-import com.rendi.RendiBackend.product.domain.Product;
-import com.rendi.RendiBackend.product.dto.ProductUserResponse;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
-import com.rendi.RendiBackend.wish.WishService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-    private final WishService wishService;
-    private final MemberService memberService;
-    private final ProductRepository productRepository;
-    @Transactional
-    public List<ProductUserResponse> searchByKeyword(String keywordName){
-        List<ProductUserResponse> dtos = new ArrayList<>();
-        List<Product> products = productRepository.findAll();
-        Member member = memberService.findCurrentMember();
-        for (Product product : products) {
-            boolean wishYN = wishService.checkWishes(member, product);
-            dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
-                    ,wishYN,product.getProductImgUrl(), product.getDetailUrl()));
-        }
-        return dtos;
-    }
-    @Transactional
-    public List<ProductUserResponse> searchByImage(String imgUrl){
-        List<ProductUserResponse> dtos = new ArrayList<>();
-        List<Product> products = productRepository.findAll();
-        Member member = memberService.findCurrentMember();
-        for (Product product : products) {
-            boolean wishYN = wishService.checkWishes(member, product);
-            dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
-                    ,wishYN,product.getProductImgUrl(), product.getDetailUrl()));
-        }
-        return dtos;
-    }
+
+
+//    @Transactional
+//    public List<Long> searchByKeyword(String inputKeyword){
+//        List<Long> productIds = new ArrayList<>();
+//        productIds.add(1L);
+//        return productIds;
+//    }
 
 //    public List<Keyword> searchKeywords(String inputKeyword) {
 //        // 입력된 키워드 벡터 생성

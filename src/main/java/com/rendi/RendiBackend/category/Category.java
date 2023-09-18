@@ -33,4 +33,12 @@ public class Category {
         this.categoryName = categoryName;
         this.listOrder = listOrder;
     }
+    public List<Category> getAllSubcategories() {
+        List<Category> subcategories = new ArrayList<>();
+        for (Category child : children) {
+            subcategories.add(child);
+            subcategories.addAll(child.getAllSubcategories());
+        }
+        return subcategories;
+    }
 }
