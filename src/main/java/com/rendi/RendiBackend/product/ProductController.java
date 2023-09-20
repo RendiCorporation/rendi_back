@@ -2,7 +2,7 @@ package com.rendi.RendiBackend.product;
 
 import com.rendi.RendiBackend.common.dto.StringResponse;
 import com.rendi.RendiBackend.product.dto.*;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
+import com.rendi.RendiBackend.repositories.ProductRepository;
 import com.rendi.RendiBackend.product.service.ProductService;
 import com.rendi.RendiBackend.product.dto.SearchGuestResponse;
 import lombok.RequiredArgsConstructor;
@@ -89,6 +89,17 @@ public class ProductController {
     @GetMapping("/guest/search/keyword")
     public List<SearchGuestResponse> getProductsByKeywordGuest(@RequestParam String keywordName){
         return productService.searchByKeywordGuest(keywordName);
+    }
+
+    @GetMapping("/guest/search/keyword/filter")
+    public List<ProductGuestResponse> searchProductsFilter(@RequestParam List<Long> productIds,
+                                                           @RequestParam(required = false) String sortName,
+                                                           @RequestParam(required = false) String parentCategory,
+                                                           @RequestParam(required = false) String childCategory,
+                                                           @RequestParam(required = false) String colourName,
+                                                           @RequestParam(required = false) Long minPrice,
+                                                           @RequestParam(required = false) Long maxPrice){
+        return productService.searchProductsFilter(productIds, sortName, parentCategory, childCategory, colourName, minPrice, maxPrice);
     }
 //    @GetMapping("/image")
 //    public List<ProductUserResponse> getProductsByImage(@RequestParam String imgUrl){

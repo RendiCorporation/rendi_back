@@ -1,6 +1,6 @@
 package com.rendi.RendiBackend.search.service;
 
-import com.rendi.RendiBackend.search.PopularRepository;
+import com.rendi.RendiBackend.repositories.PopularRepository;
 import com.rendi.RendiBackend.search.domain.Popular;
 import com.rendi.RendiBackend.search.dto.PopularKeywordResponse;
 import lombok.RequiredArgsConstructor;

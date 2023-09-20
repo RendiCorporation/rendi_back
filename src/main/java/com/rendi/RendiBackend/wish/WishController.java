@@ -5,7 +5,7 @@ import com.rendi.RendiBackend.member.service.MemberService;
 import com.rendi.RendiBackend.product.domain.Product;
 import com.rendi.RendiBackend.product.exception.ProductErrorCode;
 import com.rendi.RendiBackend.product.exception.ProductException;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
+import com.rendi.RendiBackend.repositories.ProductRepository;
 import com.rendi.RendiBackend.wish.dto.WishListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

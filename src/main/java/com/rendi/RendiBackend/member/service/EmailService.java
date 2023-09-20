@@ -4,7 +4,7 @@ import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.member.dto.NewLoginRequest;
 import com.rendi.RendiBackend.member.exception.MemberErrorCode;
 import com.rendi.RendiBackend.member.exception.MemberException;
-import com.rendi.RendiBackend.member.repository.MemberRepository;
+import com.rendi.RendiBackend.repositories.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

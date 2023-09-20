@@ -4,18 +4,19 @@ import com.rendi.RendiBackend.brand.domain.Brand;
 import com.rendi.RendiBackend.brand.exception.BrandErrorCode;
 import com.rendi.RendiBackend.brand.exception.BrandException;
 import com.rendi.RendiBackend.category.Category;
-import com.rendi.RendiBackend.category.CategoryRepository;
+import com.rendi.RendiBackend.repositories.CategoryRepository;
 import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.member.service.MemberService;
 import com.rendi.RendiBackend.product.domain.Product;
 import com.rendi.RendiBackend.product.dto.*;
 import com.rendi.RendiBackend.product.exception.ProductErrorCode;
 import com.rendi.RendiBackend.product.exception.ProductException;
-import com.rendi.RendiBackend.brand.repository.BrandRepository;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
+import com.rendi.RendiBackend.repositories.BrandRepository;
+import com.rendi.RendiBackend.repositories.ProductRepository;
 import com.rendi.RendiBackend.colour.Colour;
-import com.rendi.RendiBackend.colour.ColourRepository;
+import com.rendi.RendiBackend.repositories.ColourRepository;
 import com.rendi.RendiBackend.product.dto.SearchGuestResponse;
+import com.rendi.RendiBackend.product.elastic.ProductSearchRepository;
 import com.rendi.RendiBackend.search.service.SearchService;
 import com.rendi.RendiBackend.wish.WishService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ import java.util.stream.Stream;
 public class ProductService {
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
+    private final ProductSearchRepository productSearchRepository;
     private final ColourRepository colourRepository;
     private final CategoryRepository categoryRepository;
     private final WishService wishService;
@@ -398,10 +400,12 @@ public class ProductService {
     public List<SearchGuestResponse> searchByKeywordGuest(String keywordName){
         List<SearchGuestResponse> searchResponse = new ArrayList<>();
         List<ProductGuestResponse> dtos = new ArrayList<>();
-        List<Long> productIds = new ArrayList<>();
-        List<Product> products = productRepository.findAll();
+//        List<Long> productIds = new ArrayList<>();
+        List<Long> productIds = searchService.getSimilarProducts(keywordName);
+        List<Product> products = productRepository.findByIdIn(productIds);
+//        List<Product> products = productSearchRepository.findByKeywordsFuzzyAndPartial(keywordName);
         for (Product product : products) {
-            productIds.add(product.getId());
+//            productIds.add(product.getId());
             dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
                     ,product.getProductImgUrl(), product.getDetailUrl()));
         }
@@ -502,6 +506,69 @@ public class ProductService {
         return new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle(),
                 wishYN, product.getProductImgUrl(), product.getDetailUrl()
         );
+    }
+
+    public List<ProductGuestResponse> searchProductsFilter(List<Long> productIds, String sortName, String parentCategory, String childCategory,
+                                                           String colourName, Long minPrice, Long maxPrice) {
+        List<Product> products = productRepository.findByIdIn(productIds);
+        if ((sortName == null || sortName.isEmpty()) &&
+                (parentCategory == null || parentCategory.isEmpty()) &&
+                (childCategory == null || childCategory.isEmpty()) &&
+                (colourName == null || colourName.isEmpty()) &&
+                minPrice == null && maxPrice == null) {
+            return products.stream().map(this::convertToDto).collect(Collectors.toList());
+        }
+        Stream<Product> filteredProducts = products.stream();
+        if (childCategory != null && !childCategory.isEmpty()){
+            Category childCat= categoryRepository.findByCategoryName(childCategory)
+                    .orElseThrow(() -> new IllegalArgumentException("No category found with name: " + childCategory));
+            filteredProducts = filteredProducts.filter(product -> product.getCategory().equals(childCat));
+        }
+        if (parentCategory != null && !parentCategory.isEmpty()){
+            Category parentCat= categoryRepository.findByCategoryName(parentCategory)
+                    .orElseThrow(() -> new IllegalArgumentException("No category found with name: " + parentCategory));
+            Set<Category> subcategories= new HashSet<>(parentCat.getAllSubcategories());
+            filteredProducts = filteredProducts.filter(product -> subcategories.contains(product.getCategory()));
+        }
+
+        if (minPrice != null && maxPrice != null) {
+            filteredProducts = filteredProducts.filter(product -> product.getPrice() >= minPrice && product.getPrice() <= maxPrice);
+        }
+
+        if (colourName != null && !colourName.isEmpty()) {
+            filteredProducts = filteredProducts.filter(product -> hasColour(product.getColours(), colourName));
+        }
+
+        List<Product> finalProductList;
+
+        if (sortName != null && !sortName.isEmpty()){
+            switch(sortName){
+                case "추천순":
+                    finalProductList = filteredProducts.collect(Collectors.toList());
+                    Collections.shuffle(finalProductList);
+                    break;
+                case "인기순":
+                    finalProductList = filteredProducts.sorted(Comparator.comparing(Product::getHits).reversed()).collect(Collectors.toList());
+                    break;
+                case "낮은가격순":
+                    finalProductList = filteredProducts.sorted(Comparator.comparing(Product::getPrice)).collect(Collectors.toList());
+                    break;
+                case "높은가격순":
+                    finalProductList = filteredProducts.sorted(Comparator.comparing(Product::getPrice).reversed()).collect(Collectors.toList());
+                    break;
+                default:
+                    finalProductList =  filteredProducts.collect(Collectors.toList());
+            }
+        } else {
+            finalProductList =  filteredProducts.collect(Collectors.toList());
+        }
+
+        return finalProductList.stream().map(this::convertToDto).collect(Collectors.toList());
+
+
+    }
+    public List<Product> fuzzySearchProductsByKeywords(String keywordName) {
+        return productSearchRepository.findByKeywordsFuzzyAndPartial(keywordName);
     }
 //
 //    public List<Product> sortedByFilter(String sortName, String parentCategory, String childCategory,

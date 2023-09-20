@@ -1,5 +1,6 @@
-package com.rendi.RendiBackend.colour;
+package com.rendi.RendiBackend.repositories;
 
+import com.rendi.RendiBackend.colour.Colour;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

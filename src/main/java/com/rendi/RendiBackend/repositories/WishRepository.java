@@ -1,4 +1,4 @@
-package com.rendi.RendiBackend.wish;
+package com.rendi.RendiBackend.repositories;
 
 import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.product.domain.Product;

@@ -78,6 +78,7 @@ public class InitCategory {
             createCategory(category3, "롱원피스", 3);
             createCategory(category3, "투피스", 4);
             createCategory(category3, "점프수트", 5);
+            createCategory(category3, "미디원피스", 6);
 
             createCategory(category4, "전체", 1);
             createCategory(category4, "롱팬츠", 2);

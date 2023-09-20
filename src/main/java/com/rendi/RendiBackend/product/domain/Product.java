@@ -25,7 +25,7 @@ public class Product extends BaseTimeEntity {
 
     private String title;
     private Long price;
-    @Column(length = 1000)
+    @Column(length = 10000)
     private String detailUrl;
     private Long hits;
     @Column(length = 10000)

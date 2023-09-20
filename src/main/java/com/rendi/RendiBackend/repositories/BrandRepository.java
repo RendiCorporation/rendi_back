@@ -1,4 +1,4 @@
-package com.rendi.RendiBackend.brand.repository;
+package com.rendi.RendiBackend.repositories;
 
 import com.rendi.RendiBackend.brand.domain.Brand;
 import com.rendi.RendiBackend.product.domain.Product;

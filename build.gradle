@@ -57,6 +57,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 	implementation 'org.apache.lucene:lucene-core:8.10.0'
 	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
+	implementation group: 'org.python', name: 'jython-standalone', version:'2.7.3'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.3'
+
 
 }
 

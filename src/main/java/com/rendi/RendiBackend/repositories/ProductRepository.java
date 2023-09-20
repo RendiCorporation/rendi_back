@@ -1,7 +1,6 @@
-package com.rendi.RendiBackend.product.repository;
+package com.rendi.RendiBackend.repositories;
 
 import com.rendi.RendiBackend.category.Category;
-import com.rendi.RendiBackend.category.CategoryRepository;
 import com.rendi.RendiBackend.colour.Colour;
 import com.rendi.RendiBackend.product.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -7,7 +7,7 @@ import com.rendi.RendiBackend.member.domain.Provider;
 import com.rendi.RendiBackend.member.dto.*;
 import com.rendi.RendiBackend.member.exception.MemberErrorCode;
 import com.rendi.RendiBackend.member.exception.MemberException;
-import com.rendi.RendiBackend.member.repository.MemberRepository;
+import com.rendi.RendiBackend.repositories.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

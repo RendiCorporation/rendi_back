@@ -4,7 +4,7 @@ import com.rendi.RendiBackend.auth.domain.CustomUserDetails;
 import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.member.exception.MemberErrorCode;
 import com.rendi.RendiBackend.member.exception.MemberException;
-import com.rendi.RendiBackend.member.repository.MemberRepository;
+import com.rendi.RendiBackend.repositories.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

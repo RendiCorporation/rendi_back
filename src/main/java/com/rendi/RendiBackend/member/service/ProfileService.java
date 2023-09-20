@@ -4,7 +4,7 @@ import com.rendi.RendiBackend.auth.domain.MemberRefreshToken;
 import com.rendi.RendiBackend.auth.dto.TokenRequestDto;
 import com.rendi.RendiBackend.auth.exception.AuthErrorCode;
 import com.rendi.RendiBackend.auth.exception.AuthException;
-import com.rendi.RendiBackend.auth.repository.RefreshTokenRepository;
+import com.rendi.RendiBackend.repositories.RefreshTokenRepository;
 import com.rendi.RendiBackend.member.domain.Interest;
 import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.member.domain.Profile;
@@ -13,23 +13,18 @@ import com.rendi.RendiBackend.member.dto.ProfileSaveRequest;
 import com.rendi.RendiBackend.member.dto.ProfileUpdateRequest;
 import com.rendi.RendiBackend.member.exception.MemberErrorCode;
 import com.rendi.RendiBackend.member.exception.MemberException;
-import com.rendi.RendiBackend.member.repository.InterestRepository;
-import com.rendi.RendiBackend.member.repository.MemberRepository;
-import com.rendi.RendiBackend.member.repository.ProfileRepository;
+import com.rendi.RendiBackend.repositories.InterestRepository;
+import com.rendi.RendiBackend.repositories.MemberRepository;
+import com.rendi.RendiBackend.repositories.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service

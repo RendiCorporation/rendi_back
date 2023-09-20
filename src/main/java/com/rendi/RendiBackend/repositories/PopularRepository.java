@@ -1,4 +1,4 @@
-package com.rendi.RendiBackend.search;
+package com.rendi.RendiBackend.repositories;
 
 import com.rendi.RendiBackend.search.domain.Popular;
 import org.springframework.data.jpa.repository.JpaRepository;

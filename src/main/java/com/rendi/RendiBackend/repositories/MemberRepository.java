@@ -1,4 +1,4 @@
-package com.rendi.RendiBackend.member.repository;
+package com.rendi.RendiBackend.repositories;
 
 import com.rendi.RendiBackend.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,5 +1,6 @@
-package com.rendi.RendiBackend.category;
+package com.rendi.RendiBackend.repositories;
 
+import com.rendi.RendiBackend.category.Category;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.data.jpa.repository.JpaRepository;
 
