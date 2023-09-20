@@ -66,19 +66,19 @@ public class InitCategory {
             createCategory(category2, "전체", 1);
             createCategory(category2, "가디건", 2);
             createCategory(category2, "바람막이", 3);
-            createCategory(category2, "블라우스", 4);
-            createCategory(category2, "자켓", 5);
-            createCategory(category2, "코트", 6);
-            createCategory(category2, "패딩", 7);
-            createCategory(category2, "플리스", 8);
-            createCategory(category2, "집업/점퍼", 9);
-            createCategory(category2, "야상", 10);
+            createCategory(category2, "자켓", 4);
+            createCategory(category2, "코트", 5);
+            createCategory(category2, "패딩", 6);
+            createCategory(category2, "플리스", 7);
+            createCategory(category2, "집업/점퍼", 8);
+            createCategory(category2, "야상", 9);
 
             createCategory(category3, "전체", 1);
             createCategory(category3, "미니원피스", 2);
             createCategory(category3, "롱원피스", 3);
             createCategory(category3, "투피스", 4);
             createCategory(category3, "점프수트", 5);
+            createCategory(category3, "미디원피스", 6);
 
             createCategory(category4, "전체", 1);
             createCategory(category4, "롱팬츠", 2);
@@ -122,7 +122,8 @@ public class InitCategory {
             createCategory(category9, "힐", 6);
             createCategory(category9, "워커/부츠", 7);
             createCategory(category9, "슬리퍼/쪼리", 8);
-            createCategory(category9, "기타", 9);
+            createCategory(category9, "주얼리", 9);
+//            createCategory(category9, "기타", 10);
 
             createCategory(category10, "전체", 1);
             createCategory(category10, "백팩", 2);
@@ -145,7 +146,7 @@ public class InitCategory {
             createCategory(category11, "양말/스타킹", 8);
             createCategory(category11, "시계", 9);
             createCategory(category11, "마스크", 10);
-            createCategory(category11, "기타", 11);
+//            createCategory(category11, "기타", 11);
 
 
 

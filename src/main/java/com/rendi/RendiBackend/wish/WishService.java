@@ -3,7 +3,8 @@ package com.rendi.RendiBackend.wish;
 import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.member.service.MemberService;
 import com.rendi.RendiBackend.product.domain.Product;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
+import com.rendi.RendiBackend.repositories.ProductRepository;
+import com.rendi.RendiBackend.repositories.WishRepository;
 import com.rendi.RendiBackend.wish.domain.Wish;
 import com.rendi.RendiBackend.wish.dto.WishListResponse;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,9 @@ public class WishService {
         List<WishListResponse> dtos = new ArrayList<>();
         List<Wish> wishes = wishRepository.findAllByMember(member);
         for(Wish wish : wishes){
-            dtos.add(new WishListResponse(wish.getProduct().getId(), wish.getProduct().getPrice(), wish.getProduct().getBrand().getId(), wish.getProduct().getTitle()));
+            dtos.add(new WishListResponse(wish.getProduct().getId(), wish.getProduct().getPrice(),
+                    wish.getProduct().getBrand().getId(), wish.getProduct().getTitle(),
+                    wish.getProduct().getProductImgUrl(), wish.getProduct().getDetailUrl()));
         }
         return dtos;
     }

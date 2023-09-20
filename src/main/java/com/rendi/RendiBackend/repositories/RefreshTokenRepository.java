@@ -1,4 +1,4 @@
-package com.rendi.RendiBackend.auth.repository;
+package com.rendi.RendiBackend.repositories;
 
 import com.rendi.RendiBackend.auth.domain.MemberRefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;

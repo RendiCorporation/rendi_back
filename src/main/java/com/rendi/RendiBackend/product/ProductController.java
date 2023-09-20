@@ -1,19 +1,15 @@
 package com.rendi.RendiBackend.product;
 
-import com.rendi.RendiBackend.category.Category;
 import com.rendi.RendiBackend.common.dto.StringResponse;
-import com.rendi.RendiBackend.product.domain.Product;
 import com.rendi.RendiBackend.product.dto.*;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
+import com.rendi.RendiBackend.repositories.ProductRepository;
 import com.rendi.RendiBackend.product.service.ProductService;
+import com.rendi.RendiBackend.product.dto.SearchGuestResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 
 @Slf4j
@@ -44,13 +40,23 @@ public class ProductController {
     public List<ProductUserResponse> getProductsSortedByDateUser(@RequestParam(required = false) String categoryName) {
         return productService.getNewProductsUser(categoryName);
     }
-    @GetMapping("/guest/all") // 전체 상품 for guest (not loginned)
-    public List<ProductGuestResponse> getAllProductsGuest() {
-        return productService.getAllProductsGuest();
+    @GetMapping("/guest/all") // 전체 상품 for guest (not loginned) + filter
+    public List<ProductGuestResponse> getAllProductsGuest(@RequestParam(required = false) String sortName,
+                                                          @RequestParam(required = false) String parentCategory,
+                                                          @RequestParam(required = false) String childCategory,
+                                                          @RequestParam(required = false) String colourName,
+                                                          @RequestParam(required = false) Long minPrice,
+                                                          @RequestParam(required = false) Long maxPrice) {
+        return productService.getAllProductsGuest(sortName, parentCategory, childCategory, colourName, minPrice, maxPrice);
     }
-    @GetMapping("/all") // 전체 상품 for user (loginned)
-    public List<ProductUserResponse> getAllProductsUser() {
-        return productService.getAllProductsUser();
+    @GetMapping("/all") // 전체 상품 for user (loginned) + filter
+    public List<ProductUserResponse> getAllProductsUser(@RequestParam(required = false) String sortName,
+                                                        @RequestParam(required = false) String parentCategory,
+                                                        @RequestParam(required = false) String childCategory,
+                                                        @RequestParam(required = false) String colourName,
+                                                        @RequestParam(required = false) Long minPrice,
+                                                        @RequestParam(required = false) Long maxPrice) {
+        return productService.getAllProductsUser(sortName, parentCategory, childCategory, colourName, minPrice, maxPrice);
     }
     @GetMapping("/guest/best") // best 상품 for guest (not loginned)
     public List<ProductGuestResponse> getBestProductsGuest(@RequestParam(required = false) String categoryName){
@@ -69,24 +75,46 @@ public class ProductController {
     public List<ProductUserResponse> getRecentProducts(@RequestParam List<Long> recentProductIds) {
         return productService.getRecentProducts(recentProductIds);
     }
+    @GetMapping("/category") // category 상품 for user (loginned)
+    public List<ProductUserResponse> getProductsByCategoryUser(@RequestParam(required = false) String parentName,
+                                                         @RequestParam(required = false) String childName){
+        return productService.getProductsByCategoryUser(parentName, childName);
+    }
+    @GetMapping("/guest/category") // category 상품 for guest (not loginned)
+    public List<ProductGuestResponse> getProductsByCategoryGuest(@RequestParam(required = false) String parentName,
+                                                               @RequestParam(required = false) String childName){
+        return productService.getProductsByCategoryGuest(parentName, childName);
+    }
 
-//    @GetMapping("/filter")
-//    public List<ProductGuestResponse> SortedByFilter(@RequestParam(required = false) String sortName,
-//                                                     @RequestParam(required = false) String parentCategory,
-//                                                     @RequestParam(required = false) String childCategory,
-//                                                     @RequestParam(required = false) String colourName,
-//                                                     @RequestParam(required = false) String priceTag){
-//
-//        Specification<Product> spec = Specification.where(
-//                        ProductSpecification.hasParentCategory(parentCategory))
-//                .and(ProductSpecification.hasChildCategory(childCategory))
-//                .and(ProductSpecification.hasColour(colourName))
-//                .and(ProductSpecification.inPriceRange(priceTag));
-//
-//        List<Product> products = productRepository.findAll(spec);
-//
-//        // Convert products into ProductGuestResponse objects and return.
-//    }
+    @GetMapping("/guest/search/keyword")
+    public List<SearchGuestResponse> getProductsByKeywordGuest(@RequestParam String keywordName){
+        return productService.searchByKeywordGuest(keywordName);
+    }
+
+    @GetMapping("/guest/search/keyword/filter")
+    public List<ProductGuestResponse> searchProductsFilter(@RequestParam List<Long> productIds,
+                                                           @RequestParam(required = false) String sortName,
+                                                           @RequestParam(required = false) String parentCategory,
+                                                           @RequestParam(required = false) String childCategory,
+                                                           @RequestParam(required = false) String colourName,
+                                                           @RequestParam(required = false) Long minPrice,
+                                                           @RequestParam(required = false) Long maxPrice){
+        return productService.searchProductsFilter(productIds, sortName, parentCategory, childCategory, colourName, minPrice, maxPrice);
+    }
+//    @GetMapping("/image")
+//    public List<ProductUserResponse> getProductsByImage(@RequestParam String imgUrl){
+//        return searchService.searchByImage(imgUrl);
+
+    @GetMapping("/filter")
+    public List<ProductGuestResponse> SortedByFilter(@RequestParam(required = false) String sortName,
+                                                     @RequestParam(required = false) String parentCategory,
+                                                     @RequestParam(required = false) String childCategory,
+                                                     @RequestParam(required = false) String colourName,
+                                                     @RequestParam(required = false) Long minPrice,
+                                                     @RequestParam(required = false) Long maxPrice){
+
+        return productService.searchProductAndSort(sortName, parentCategory, childCategory, colourName, minPrice, maxPrice);
+    }
 
 
 

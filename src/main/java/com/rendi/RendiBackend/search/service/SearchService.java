@@ -1,50 +1,107 @@
 package com.rendi.RendiBackend.search.service;
 
-import com.rendi.RendiBackend.member.domain.Member;
-import com.rendi.RendiBackend.member.service.MemberService;
 import com.rendi.RendiBackend.product.domain.Product;
-import com.rendi.RendiBackend.product.dto.ProductUserResponse;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
-import com.rendi.RendiBackend.wish.WishService;
+import com.rendi.RendiBackend.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-    private final WishService wishService;
-    private final MemberService memberService;
+
     private final ProductRepository productRepository;
+
     @Transactional
-    public List<ProductUserResponse> searchByKeyword(String keywordName){
-        List<ProductUserResponse> dtos = new ArrayList<>();
+    public List<Long> getSimilarProducts(String keywordName){
         List<Product> products = productRepository.findAll();
-        Member member = memberService.findCurrentMember();
-        for (Product product : products) {
-            boolean wishYN = wishService.checkWishes(member, product);
-            dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
-                    ,wishYN,product.getProductImgUrl(), product.getDetailUrl()));
+        List<Long> searchProductIds = new ArrayList<>();
+        for (Product product : products){
+            String productKeywords = product.getKeywords();
+            log.info("double : {}", calculate(keywordName, productKeywords));
+            if (productKeywords != null && calculate(keywordName, productKeywords) > 0.05){
+
+                searchProductIds.add(product.getId());
+            }
         }
-        return dtos;
+        return searchProductIds;
     }
-    @Transactional
-    public List<ProductUserResponse> searchByImage(String imgUrl){
-        List<ProductUserResponse> dtos = new ArrayList<>();
-        List<Product> products = productRepository.findAll();
-        Member member = memberService.findCurrentMember();
-        for (Product product : products) {
-            boolean wishYN = wishService.checkWishes(member, product);
-            dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
-                    ,wishYN,product.getProductImgUrl(), product.getDetailUrl()));
+    public double calculate(String text1, String text2) {
+        List<String> words1 = Arrays.asList(text1.split("\\s+"));
+        List<String> words2 = null; // Initialize words2 as null
+
+        if (text2 != null) {
+            words2 = Arrays.asList(text2.split("\\s+"));
         }
-        return dtos;
+
+        // Check if words1 and words2 are not null before proceeding
+        if (words1 != null && words2 != null) {
+            Set<String> allWords = new HashSet<>();
+            allWords.addAll(words1);
+            allWords.addAll(words2);
+
+            int[] vector1 = createVector(allWords, words1);
+            int[] vector2 = createVector(allWords, words2);
+
+            // Rest of your code that uses vector1 and vector2
+
+            if (vector1 != null && vector2 != null) {
+                return dotProduct(vector1, vector2) / (magnitude(vector1) * magnitude(vector2));
+            } else {
+                // Handle the case where vector1 or vector2 is null
+                // Possibly by assigning a default value or reporting an error
+                return 0.0; // Change this to an appropriate default value or error handling
+            }
+        } else {
+            // Handle the case where either words1 or words2 is null
+            // Possibly by assigning a default value or reporting an error
+            return 0.0; // Change this to an appropriate default value or error handling
+        }
     }
+
+
+
+
+    private int[] createVector(Set<String> allWords, List<String> wordList) {
+        Map<String, Long> wordCount = wordList.stream()
+                .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+
+        return allWords.stream()
+                .mapToInt(word -> wordCount.getOrDefault(word, 0L).intValue())
+                .toArray();
+    }
+
+    private double dotProduct(int[] vectorA, int[] vectorB) {
+        int sum = 0;
+
+        for (int i=0; i<vectorA.length; i++) {
+            sum += vectorA[i] * vectorB[i];
+        }
+
+        return sum;
+    }
+
+    private double magnitude(int[] vector) {
+        double sumMag=0;
+
+        for (int value : vector){
+            sumMag += value*value;
+        }
+
+        return Math.sqrt(sumMag);
+    }
+
+//    @Transactional
+//    public List<Long> searchByKeyword(String inputKeyword){
+//        List<Long> productIds = new ArrayList<>();
+//        productIds.add(1L);
+//        return productIds;
+//    }
 
 //    public List<Keyword> searchKeywords(String inputKeyword) {
 //        // 입력된 키워드 벡터 생성

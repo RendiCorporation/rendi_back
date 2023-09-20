@@ -1,29 +1,28 @@
 package com.rendi.RendiBackend.brand.service;
 
 import com.rendi.RendiBackend.brand.domain.Brand;
+import com.rendi.RendiBackend.brand.dto.BrandDetailGuestResponse;
 import com.rendi.RendiBackend.brand.dto.BrandDetailResponse;
 import com.rendi.RendiBackend.brand.dto.BrandListResponse;
 import com.rendi.RendiBackend.brand.dto.BrandSaveRequest;
 import com.rendi.RendiBackend.brand.exception.BrandErrorCode;
 import com.rendi.RendiBackend.brand.exception.BrandException;
-import com.rendi.RendiBackend.brand.repository.BrandRepository;
+import com.rendi.RendiBackend.repositories.BrandRepository;
 import com.rendi.RendiBackend.category.Category;
-import com.rendi.RendiBackend.colour.Colour;
+import com.rendi.RendiBackend.repositories.CategoryRepository;
 import com.rendi.RendiBackend.member.domain.Member;
 import com.rendi.RendiBackend.member.service.MemberService;
 import com.rendi.RendiBackend.product.domain.Product;
 import com.rendi.RendiBackend.product.dto.ProductGuestResponse;
-import com.rendi.RendiBackend.product.dto.ProductSaveRequest;
 import com.rendi.RendiBackend.product.dto.ProductUserResponse;
 import com.rendi.RendiBackend.product.exception.ProductErrorCode;
 import com.rendi.RendiBackend.product.exception.ProductException;
-import com.rendi.RendiBackend.product.repository.ProductRepository;
+import com.rendi.RendiBackend.repositories.ProductRepository;
 import com.rendi.RendiBackend.wish.WishService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +35,7 @@ public class BrandService {
     private final WishService wishService;
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     @Transactional
     public Brand createBrand(BrandSaveRequest request) {
         return brandRepository.save(new Brand(request.getBrandName(), request.getIconUrl(), request.getBannerUrl()));
@@ -60,20 +60,51 @@ public class BrandService {
         return dtos;
     }
     @Transactional
-    public BrandDetailResponse getBrandDetails(String brandName){
+    public BrandDetailResponse getBrandDetails(String brandName, String categoryName){
         List<ProductUserResponse> dtos = new ArrayList<>();
         Brand brand = brandRepository.findByBrandName(brandName)
                 .orElseThrow(()->new BrandException(BrandErrorCode.BRAND_NOT_FOUND_BY_NAME));
-        List<Product> products = productRepository.findByBrandId(brand.getId());
+        List<Product> products;
+        if (categoryName == null || categoryName.isEmpty()) {
+            products = productRepository.findByBrandId(brand.getId());
+        } else {
+            Category parentCategory = categoryRepository.findByCategoryName(categoryName)
+                    .orElseThrow(() -> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
+            List<Category> subCategories = parentCategory.getAllSubcategories();
+            subCategories.add(parentCategory);
+            products = productRepository.findByBrandIdAndCategoryIn(brand.getId(), subCategories);
+        }
         Member member = memberService.findCurrentMember();
         Long totalWishes = 0L;
         for (Product product : products){
             boolean wishYN = wishService.checkWishes(member, product);
             dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
                     ,wishYN, product.getProductImgUrl(), product.getDetailUrl()));
-            //TODO : wish or hits?
             totalWishes += product.getHits();
         }
         return new BrandDetailResponse(brand, totalWishes, dtos);
+    }
+    @Transactional
+    public BrandDetailGuestResponse getBrandDetailsGuest(String brandName, String categoryName){
+        List<ProductGuestResponse> dtos = new ArrayList<>();
+        Brand brand = brandRepository.findByBrandName(brandName)
+                .orElseThrow(()->new BrandException(BrandErrorCode.BRAND_NOT_FOUND_BY_NAME));
+        List<Product> products;
+        if (categoryName == null || categoryName.isEmpty()) {
+            products = productRepository.findByBrandId(brand.getId());
+        } else {
+            Category parentCategory = categoryRepository.findByCategoryName(categoryName)
+                    .orElseThrow(() -> new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
+            List<Category> subCategories = parentCategory.getAllSubcategories();
+            subCategories.add(parentCategory);
+            products = productRepository.findByBrandIdAndCategoryIn(brand.getId(), subCategories);
+        }
+        Long totalWishes = 0L;
+        for (Product product : products){
+            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
+                    ,product.getProductImgUrl(), product.getDetailUrl()));
+            totalWishes += product.getHits();
+        }
+        return new BrandDetailGuestResponse(brand, totalWishes, dtos);
     }
 }
