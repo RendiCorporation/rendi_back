@@ -7,6 +7,9 @@ import com.rendi.RendiBackend.product.service.ProductService;
 import com.rendi.RendiBackend.product.dto.SearchGuestResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +43,11 @@ public class ProductController {
     public List<ProductUserResponse> getProductsSortedByDateUser(@RequestParam(required = false) String categoryName) {
         return productService.getNewProductsUser(categoryName);
     }
+//    @GetMapping("/new")
+//    public Page<ProductUserResponse> getProductsSortedByDateUser(@RequestParam(required = false) String categoryName,
+//                                                                 @PageableDefault(size = 16) Pageable pageable) {
+//        return productService.getNewProductsUser(categoryName, pageable);
+//    }
     @GetMapping("/guest/all") // 전체 상품 for guest (not loginned) + filter
     public List<ProductGuestResponse> getAllProductsGuest(@RequestParam(required = false) String sortName,
                                                           @RequestParam(required = false) String parentCategory,
@@ -90,6 +98,7 @@ public class ProductController {
     public List<SearchGuestResponse> getProductsByKeywordGuest(@RequestParam String keywordName){
         return productService.searchByKeywordGuest(keywordName);
     }
+
 
     @GetMapping("/guest/search/keyword/filter")
     public List<ProductGuestResponse> searchProductsFilter(@RequestParam List<Long> productIds,

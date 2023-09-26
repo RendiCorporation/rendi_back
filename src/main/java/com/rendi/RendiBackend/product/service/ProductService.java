@@ -23,9 +23,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -94,9 +100,15 @@ public class ProductService {
             subCategories.add(parentCategory);
             products = productRepository.findByCategoryInOrderByCreatedAtDesc(subCategories);
         }
+        int count = 0;
         for (Product product : products) {
-            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle(),
-                    product.getProductImgUrl(), product.getDetailUrl()));
+            if (count >= 240) {
+                break;
+            }
+            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(),
+                    product.getTitle(), product.getProductImgUrl(), product.getDetailUrl()));
+
+            count++;
         }
         return dtos;
     }
@@ -114,13 +126,48 @@ public class ProductService {
             subCategories.add(parentCategory);
             products = productRepository.findByCategoryInOrderByCreatedAtDesc(subCategories);
         }
+        int count = 0;
         for (Product product : products) {
+            if (count >= 240) {
+                break;
+            }
             boolean wishYN = wishService.checkWishes(member, product);
             dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle(),
                     wishYN, product.getProductImgUrl(), product.getDetailUrl()));
+            count++;
         }
         return dtos;
     }
+
+//    @Transactional
+//    public Page<ProductUserResponse> getNewProductsUser(String categoryName, Pageable pageable) {
+//        Member member = memberService.findCurrentMember();
+//        Page<Product> products;
+//
+//        // Create a new PageRequest object with the sorting applied
+//        Pageable sortedByCreatedAtDesc =
+//                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdAt").descending());
+//
+//        if (categoryName == null || categoryName.isEmpty()) {
+//            products = productRepository.findAll(sortedByCreatedAtDesc);
+//        } else {
+//            Category parentCategory = categoryRepository.findByCategoryName(categoryName)
+//                    .orElseThrow(()->new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
+//            List<Category> subCategories = parentCategory.getAllSubcategories();
+//            subCategories.add(parentCategory);
+//
+//            products = productRepository.findByCategoryIn(subCategories, sortedByCreatedAtDesc);
+//        }
+//
+//        return products.map(product -> {
+//            boolean wishYN = wishService.checkWishes(member, product);
+//            return new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(),
+//                    product.getTitle(), wishYN, product.getProductImgUrl(),
+//                    product.getDetailUrl());
+//        });
+//    }
+
+
 
     @Transactional
     public List<ProductGuestResponse> getBestProductsGuest(String categoryName){
@@ -135,9 +182,15 @@ public class ProductService {
             subCategories.add(parentCategory);
             products = productRepository.findByCategoryInOrderByHitsDesc(subCategories);
         }
+        int count = 0;
         for (Product product : products) {
-            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle(),
-                    product.getProductImgUrl(), product.getDetailUrl()));
+            if (count >= 240) {
+                break;
+            }
+            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(),
+                    product.getTitle(), product.getProductImgUrl(), product.getDetailUrl()));
+
+            count++;
         }
         return dtos;
     }
@@ -155,10 +208,15 @@ public class ProductService {
             subCategories.add(parentCategory);
             products = productRepository.findByCategoryInOrderByHitsDesc(subCategories);
         }
+        int count = 0;
         for (Product product : products) {
+            if (count >= 240) {
+                break;
+            }
             boolean wishYN = wishService.checkWishes(member, product);
             dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle(),
                     wishYN, product.getProductImgUrl(), product.getDetailUrl()));
+            count++;
         }
         return dtos;
     }
@@ -184,10 +242,15 @@ public class ProductService {
                     .orElseThrow(()->new ProductException(ProductErrorCode.CATEGORY_NOT_FOUND_BY_CATEGORY_NAME));
             products.addAll(productRepository.findByCategory(category));
         }
+        int count = 0;
         for (Product product : products) {
+            if (count >= 240) {
+                break;
+            }
             boolean wishYN = wishService.checkWishes(member, product);
             dtos.add(new ProductUserResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle(),
                     wishYN, product.getProductImgUrl(), product.getDetailUrl()));
+            count++;
         }
         return dtos;
     }
@@ -214,9 +277,15 @@ public class ProductService {
             products.addAll(productRepository.findByCategory(category));
         }
 
+        int count = 0;
         for (Product product : products) {
-            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle(),
-                    product.getProductImgUrl(), product.getDetailUrl()));
+            if (count >= 240) {
+                break;
+            }
+            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(),
+                    product.getTitle(), product.getProductImgUrl(), product.getDetailUrl()));
+
+            count++;
         }
 
         return dtos;
@@ -283,7 +352,11 @@ public class ProductService {
             finalProductList =  filteredProducts.collect(Collectors.toList());
         }
 
-        return finalProductList.stream().map(this::convertToDtoUser).collect(Collectors.toList());
+//        return finalProductList.stream().map(this::convertToDtoUser).collect(Collectors.toList());
+        return finalProductList.stream()
+                .map(this::convertToDtoUser)
+                .limit(240)
+                .collect(Collectors.toList());
 
 
     }
@@ -348,7 +421,7 @@ public class ProductService {
             finalProductList =  filteredProducts.collect(Collectors.toList());
         }
 
-        return finalProductList.stream().map(this::convertToDto).collect(Collectors.toList());
+        return finalProductList.stream().map(this::convertToDto).limit(240).collect(Collectors.toList());
 
     }
     @Transactional
@@ -396,23 +469,63 @@ public class ProductService {
 //                .map(this::convertToDto)
 //                .collect(Collectors.toList());
 //    }
-    @Transactional
+//    @Transactional
+//    public List<SearchGuestResponse> searchByKeywordGuest(String keywordName){
+//        List<SearchGuestResponse> searchResponse = new ArrayList<>();
+//        List<ProductGuestResponse> dtos = new ArrayList<>();
+////        List<Long> productIds = new ArrayList<>();
+//        List<Long> productIds = searchService.getSimilarProducts(keywordName);
+//        List<Product> products = productRepository.findByIdIn(productIds);
+////        List<Product> products = productSearchRepository.findByKeywordsFuzzyAndPartial(keywordName);
+//        for (Product product : products) {
+////            productIds.add(product.getId());
+//            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
+//                    ,product.getProductImgUrl(), product.getDetailUrl()));
+//        }
+//        searchResponse.add(new SearchGuestResponse(productIds, dtos));
+//        return searchResponse;
+//
+//    }
+
     public List<SearchGuestResponse> searchByKeywordGuest(String keywordName){
         List<SearchGuestResponse> searchResponse = new ArrayList<>();
         List<ProductGuestResponse> dtos = new ArrayList<>();
-//        List<Long> productIds = new ArrayList<>();
-        List<Long> productIds = searchService.getSimilarProducts(keywordName);
-        List<Product> products = productRepository.findByIdIn(productIds);
-//        List<Product> products = productSearchRepository.findByKeywordsFuzzyAndPartial(keywordName);
+        List<String> titles = springToFlask(keywordName);
+        List<Long> productIds = new ArrayList<>();
+
+        List<Product> products = productRepository.findByTitleIn(titles);
+
         for (Product product : products) {
-//            productIds.add(product.getId());
+            productIds.add(product.getId());
             dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
                     ,product.getProductImgUrl(), product.getDetailUrl()));
         }
         searchResponse.add(new SearchGuestResponse(productIds, dtos));
         return searchResponse;
-
     }
+
+    @Transactional
+    public List<String> springToFlask(String keywordName){
+        RestTemplate restTemplate = new RestTemplate();
+        String flaskUrl = "http://localhost:5000/search";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("name", keywordName);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<List<String>> responseEntity = restTemplate.exchange(flaskUrl, HttpMethod.POST, entity,
+                new ParameterizedTypeReference<List<String>>() {});
+
+        List<String> titles = responseEntity.getBody();
+
+        return titles;
+    }
+
+
+
     @Transactional
     public List<ProductUserResponse> searchByImage(String imgUrl){
         List<ProductUserResponse> dtos = new ArrayList<>();
@@ -487,7 +600,7 @@ public class ProductService {
             finalProductList =  filteredProducts.collect(Collectors.toList());
         }
 
-        return finalProductList.stream().map(this::convertToDto).collect(Collectors.toList());
+        return finalProductList.stream().map(this::convertToDto).limit(240).collect(Collectors.toList());
 
 
     }
@@ -563,7 +676,7 @@ public class ProductService {
             finalProductList =  filteredProducts.collect(Collectors.toList());
         }
 
-        return finalProductList.stream().map(this::convertToDto).collect(Collectors.toList());
+        return finalProductList.stream().map(this::convertToDto).limit(240).collect(Collectors.toList());
 
 
     }

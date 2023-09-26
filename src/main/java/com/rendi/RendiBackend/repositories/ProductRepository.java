@@ -3,6 +3,8 @@ package com.rendi.RendiBackend.repositories;
 import com.rendi.RendiBackend.category.Category;
 import com.rendi.RendiBackend.colour.Colour;
 import com.rendi.RendiBackend.product.domain.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -22,5 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,  JpaSpe
     List<Product> findByCategoryInOrderByHitsDesc(List<Category> categories);
     List<Product> findByCategoryInOrderByCreatedAtDesc(List<Category> categories);
     List<Product> findByBrandIdAndCategoryIn(Long brandId, List<Category> categories);
+    Page<Product> findByCategoryIn(List<Category> categories, Pageable pageable);
+    List<Product> findByTitleIn(List<String> titles);
 
 }
