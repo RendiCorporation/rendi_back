@@ -26,5 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>,  JpaSpe
     List<Product> findByBrandIdAndCategoryIn(Long brandId, List<Category> categories);
     Page<Product> findByCategoryIn(List<Category> categories, Pageable pageable);
     List<Product> findByTitleIn(List<String> titles);
+//    Product findByTitle(String title);
 
 }

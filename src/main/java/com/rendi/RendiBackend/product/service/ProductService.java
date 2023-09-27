@@ -487,22 +487,49 @@ public class ProductService {
 //
 //    }
 
+//    public List<SearchGuestResponse> searchByKeywordGuest(String keywordName){
+//        List<SearchGuestResponse> searchResponse = new ArrayList<>();
+//        List<ProductGuestResponse> dtos = new ArrayList<>();
+//        List<String> titles = springToFlask(keywordName);
+//        List<Long> productIds = new ArrayList<>();
+//
+//        List<Product> products = productRepository.findByTitleIn(titles);
+//
+//        for (Product product : products) {
+//            productIds.add(product.getId());
+//            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
+//                    ,product.getProductImgUrl(), product.getDetailUrl()));
+//        }
+//        searchResponse.add(new SearchGuestResponse(productIds, dtos));
+//        return searchResponse;
+//    }
+    @Transactional
     public List<SearchGuestResponse> searchByKeywordGuest(String keywordName){
         List<SearchGuestResponse> searchResponse = new ArrayList<>();
         List<ProductGuestResponse> dtos = new ArrayList<>();
         List<String> titles = springToFlask(keywordName);
         List<Long> productIds = new ArrayList<>();
 
-        List<Product> products = productRepository.findByTitleIn(titles);
-
-        for (Product product : products) {
-            productIds.add(product.getId());
-            dtos.add(new ProductGuestResponse(product.getId(), product.getPrice(), product.getBrand().getId(), product.getTitle()
-                    ,product.getProductImgUrl(), product.getDetailUrl()));
+        for (String title : titles) {
+            Optional<Product> productOpt = productRepository.findByTitle(title);
+            if (productOpt.isPresent()) {
+                Product product = productOpt.get();
+                productIds.add(product.getId());
+                dtos.add(new ProductGuestResponse(product.getId(),
+                        product.getPrice(),
+                        product.getBrand().getId(),
+                        product.getTitle(),
+                        product.getProductImgUrl(),
+                        product.getDetailUrl()));
+            }
         }
+
         searchResponse.add(new SearchGuestResponse(productIds, dtos));
+
         return searchResponse;
     }
+
+
 
     @Transactional
     public List<String> springToFlask(String keywordName){
@@ -520,6 +547,7 @@ public class ProductService {
                 new ParameterizedTypeReference<List<String>>() {});
 
         List<String> titles = responseEntity.getBody();
+        log.info("title list = {}", titles);
 
         return titles;
     }
