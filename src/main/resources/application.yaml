@@ -1,0 +1,56 @@
+spring:
+  #  redis:
+  #    host: 127.0.0.1
+  #    port: 6379
+  elasticsearch:
+    rest:
+      uris: https://localhost:9200
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/rendibackup
+#    url: jdbc:h2:~/rendibackup
+    driver-class-name: org.h2.Driver
+    username: sa2
+    password:
+  jpa:
+    # 객체를 보고 자동으로 테이블 생성 여부. 생성 - create, 비생성 - none
+    # 테스트이기 때문에 create로 설정하며
+    # 실제로는 none 으로 합니다. create이면 기존의 테이블을 전부 밀어버립니다.
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  # 콘솔 확인 을 위한 always
+  output:
+    ansi:
+      enabled: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: rendicorporation@gmail.com
+    password: hbhkbrbzvqovzkys
+    properties:
+      mail:
+        smtp:
+          timeout: 10000000
+          starttls:
+            enable: true
+          auth: true
+# 파라미터 확인을 위한 trace
+logging:
+  level:
+    org.hibernate.type: trace
+
+# jwt secret key 설정
+jwt:
+  secret: 'c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK'
+  token-validity-in-seconds: 86400	# 초
+app:
+  auth:
+    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
+    #-> 리프레시 토큰 발급용
+    tokenExpiry: 1800000
+    refreshTokenExpiry: 604800000

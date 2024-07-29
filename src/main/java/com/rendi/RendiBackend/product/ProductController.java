@@ -125,6 +125,8 @@ public class ProductController {
         return productService.searchProductAndSort(sortName, parentCategory, childCategory, colourName, minPrice, maxPrice);
     }
 
+    //using gemini api
+
 
 
 }
